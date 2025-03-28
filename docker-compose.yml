@@ -13,6 +13,22 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  postgres:
+    image: postgis/postgis:13-3.1  # Use PostGIS-enabled image
+    container_name: postgres_container
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: food_places  # Ensure DB is correctly created
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   mongodb_data:
     driver: local
+  postgres_data:
+    driver: local
+

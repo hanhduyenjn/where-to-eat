@@ -34,7 +34,6 @@ Thumbs.db
 *.cert
 *.lock
 *.mod
-*.sum
 
 # all files in images
 images/*

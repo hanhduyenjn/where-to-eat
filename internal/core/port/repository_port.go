@@ -10,9 +10,10 @@ import (
 
 type PlacesRepository interface {
 	SavePlaces(ctx context.Context, category string, circle domain.Circle, places []interface{}) error
-	CircleExists(ctx context.Context, category string, circle domain.Circle) (bool, error)
+	AreaHasBeenScanned(ctx context.Context, category string, circle domain.Circle) (bool, error)
 	GetNumPlaces(ctx context.Context, category string, circle domain.Circle) (int64, error)
-	GetPlaces(ctx context.Context, limit int, offset int) ([]domain.Place, error)
+	GetPhotos(ctx context.Context, limit, offset int) ([]domain.Photo, error)
+	GetNearbyPlaces(ctx context.Context, category string, circle domain.Circle, searchString string) ([]domain.Place, error)
 }
 
 type CategoriesRepository interface {

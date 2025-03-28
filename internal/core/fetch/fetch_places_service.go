@@ -77,70 +77,71 @@ func (s *FetchPlacesService) FetchPlaces(ctx context.Context, minLat, maxLat, mi
 
 // fetchPlacesForCircle handles fetching and subdividing for a single circle
 func (s *FetchPlacesService) fetchPlacesForCircle(ctx context.Context, category string, types []string, circle domain.Circle) error {
-	// Check if the circle already exists in the places collection
-	if circle.Radius < domain.MinRadius {
-		return nil
-	}
+    // Check if the circle already exists in the places collection
+    if circle.Radius < domain.MinRadius {
+        return nil
+    }
 
-	exists, err := s.placesRepo.CircleExists(ctx, category, circle)
-	if err != nil {
-		log.Printf("Failed to check if has fetched places for %s at (%f, %f, %fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
-		return err
-	}
-	
-	// If circle exists, skip fetching but continue to check for subdivision
-	if !exists {
-		params := domain.RequestParams{
-			Types:  types,
-			Circle: circle,
-		}
-		time.Sleep(100 * time.Millisecond) // Rate limit API requests
-		places, err := s.apiAdapter.FetchPlaces(ctx, params)
-		if err != nil {
-			log.Printf("Failed to fetch places for %s at (%f, %f, %fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
-			return err
-		}
-		log.Printf("Fetched %d places for %s at (%f, %f, %fm)", len(places), category, circle.Lat, circle.Lng, circle.Radius)
+    circleHasBeenScanned, err := s.placesRepo.AreaHasBeenScanned(ctx, category, circle)
+    if err != nil {
+        log.Printf("Failed to check if has fetched places for %s at area (%.6f, %.6f, %.2fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
+        return err
+    }
+    
+	numPlaces := int64(0)
 
-		// Save fetched places
-		err = s.placesRepo.SavePlaces(ctx, category, circle, places)
-		if err != nil {
-			log.Printf("Failed to save places for %s at (%f, %f, %fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
-			return err
-		}
-		// Log all place names
-		for _, place := range places {
-			log.Printf("Place name: %s", place.(map[string]interface{})["displayName"].(map[string]interface{})["text"])
-		}
+    // If circle exists, skip fetching but continue to check for subdivision
+    if !circleHasBeenScanned {
+        params := domain.RequestParams{
+            Types:  types,
+            Circle: circle,
+        }
+        time.Sleep(100 * time.Millisecond) // Rate limit API requests
+        places, err := s.apiAdapter.FetchPlaces(ctx, params)
+        if err != nil {
+            log.Printf("Failed to fetch places for %s at (%.6f, %.6f, %.2fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
+            return err
+        }
+        numPlaces = int64(len(places))
+        log.Printf("Fetched %d places for %s at (%.6f, %.6f, %.2fm)", numPlaces, category, circle.Lat, circle.Lng, circle.Radius)
+        
+        // Save fetched places
+        err = s.placesRepo.SavePlaces(ctx, category, circle, places)
+        if err != nil {
+            log.Printf("Failed to save places for %s at (%.6f, %.6f, %.2fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
+            return err
+        }
+        // Log all place names
+        for _, place := range places {
+            displayName, ok := place.(map[string]interface{})["displayName"].(map[string]interface{})["text"].(string)
+            if ok {
+                log.Printf("Place name: %s", displayName)
+            } else {
+                log.Printf("Failed to extract place name for a place in %s at (%.6f, %.6f, %.2fm)", category, circle.Lat, circle.Lng, circle.Radius)
+            }
+        }
+    } else {
+        numPlaces, err = s.placesRepo.GetNumPlaces(ctx, category, circle)
+        if err != nil {
+            log.Printf("Failed to get number of places for %s at (%.6f, %.6f, %.2fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
+        }
+    }
+    
+    // This indicates that the circle area has been scanned completely
+    if numPlaces < domain.MaxResultsPerReq {
+        log.Printf("Fetched less than %d places for %s at (%.6f, %.6f, %.2fm), skipping subdivision", domain.MaxResultsPerReq, category, circle.Lat, circle.Lng, circle.Radius)
+        return nil
+    }
 
-		// If max results returned, subdivide and fetch again
-		if len(places) < domain.MaxResultsPerReq {
-			log.Printf("Fetched less than %d places for %s at (%f, %f, %fm), skipping subdivision", domain.MaxResultsPerReq, category, circle.Lat, circle.Lng, circle.Radius)
-			return nil
-		}
-	} else {
-		// check if the number of places < domain.MaxResultsPerReq, then skip
-		numPlaces, err := s.placesRepo.GetNumPlaces(ctx, category, circle)
-		if err != nil {
-			log.Printf("Failed to get number of places for %s at (%f, %f, %fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
-		}
-		if numPlaces < domain.MaxResultsPerReq {
-			log.Printf("Fetched less than %d places for %s at (%f, %f, %fm), skipping fetch", domain.MaxResultsPerReq, category, circle.Lat, circle.Lng, circle.Radius)
-			return nil
-		}
-	}
-	newRadius := circle.Radius / 2
-
-	subCircles := subdivideCircle(circle.Lat, circle.Lng, circle.Radius, newRadius)
-	for _, subCircle := range subCircles {
-		err := s.fetchPlacesForCircle(ctx, category, types, subCircle)
-		if err != nil {
-			log.Printf("Error in sub-circle for %s at (%f, %f, %fm): %v", category, subCircle.Lat, subCircle.Lng, subCircle.Radius, err)
-			continue
-		}
-	}
-
-	return nil
+    // Subdivide the circle into smaller circles
+    newRadius := circle.Radius / 2
+    subCircles := subdivideCircle(circle.Lat, circle.Lng, circle.Radius, newRadius)
+    for _, subCircle := range subCircles {
+        if err := s.fetchPlacesForCircle(ctx, category, types, subCircle); err != nil {
+            log.Printf("Error in sub-circle for %s at (%.6f, %.6f, %.2fm): %v", category, subCircle.Lat, subCircle.Lng, subCircle.Radius, err)
+        }
+    }
+    return nil
 }
 
 // generateGrid creates a grid of circles for the specified area with dynamic radius

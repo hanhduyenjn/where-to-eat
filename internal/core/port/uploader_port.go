@@ -5,5 +5,5 @@ import (
 )
 
 type Uploader interface {
-	Upload(ctx context.Context, src string, dst string) error
+	Upload(ctx context.Context, src string, dst string) (string, error)
 }
