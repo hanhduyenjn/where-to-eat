@@ -27,7 +27,6 @@ type PlacesRepository interface {
 	}) error
 	GetPhotos(ctx context.Context, limit, offset int) ([]domain.Photo, error)
 	GetNearbyPlaces(ctx context.Context, category string, circle domain.Circle, searchString string) ([]domain.Place, error)
-
 	UpdatePhotoURL(ctx context.Context, imgURL, placeID, photoURL string) error
 }
 

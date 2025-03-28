@@ -1,0 +1,108 @@
+[{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701351"
+  },
+  "category": "alcoholic_places",
+  "types": [
+    "bar",
+    "bar_and_grill",
+    "pub",
+    "wine_bar"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701352"
+  },
+  "category": "desserts_sweets_bakery",
+  "types": [
+    "acai_shop",
+    "bakery",
+    "bagel_shop",
+    "candy_store",
+    "chocolate_factory",
+    "chocolate_shop",
+    "confectionery",
+    "dessert_restaurant",
+    "dessert_shop",
+    "ice_cream_shop",
+    "donut_shop"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701353"
+  },
+  "category": "cafes_beverages",
+  "types": [
+    "cafe",
+    "coffee_shop",
+    "cat_cafe",
+    "dog_cafe",
+    "juice_shop",
+    "tea_house"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701354"
+  },
+  "types": [
+    "vegetarian_restaurant",
+    "vegan_restaurant",
+    "cafeteria"
+  ],
+  "category": "specialty_dietary"
+},
+{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701355"
+  },
+  "category": "restaurants",
+  "types": [
+    "afghani_restaurant",
+    "african_restaurant",
+    "american_restaurant",
+    "asian_restaurant",
+    "brazilian_restaurant",
+    "chinese_restaurant",
+    "french_restaurant",
+    "greek_restaurant",
+    "indian_restaurant",
+    "indonesian_restaurant",
+    "italian_restaurant",
+    "japanese_restaurant",
+    "korean_restaurant",
+    "lebanese_restaurant",
+    "mediterranean_restaurant",
+    "mexican_restaurant",
+    "middle_eastern_restaurant",
+    "spanish_restaurant",
+    "thai_restaurant",
+    "turkish_restaurant",
+    "vietnamese_restaurant",
+    "fine_dining_restaurant",
+    "buffet_restaurant",
+    "barbecue_restaurant",
+    "seafood_restaurant",
+    "steak_house",
+    "sushi_restaurant",
+    "ramen_restaurant"
+  ]
+},
+{
+  "_id": {
+    "$oid": "67e1974f7ab8b9ff3d701356"
+  },
+  "category": "casual_takeaway",
+  "types": [
+    "fast_food_restaurant",
+    "diner",
+    "pizza_restaurant",
+    "sandwich_shop",
+    "food_court",
+    "deli",
+    "meal_delivery",
+    "meal_takeaway"
+  ]
+}]
