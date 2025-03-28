@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"wheretoeat/internal/adapter/repository/postgres"
 	"wheretoeat/internal/core/domain"
 	"wheretoeat/internal/core/port"
 )
@@ -39,13 +38,13 @@ func init() {
 }
 
 type FetchImagesService struct {
-	photoUploader port.Uploader
-	placesRepo    *postgres.PlacesRepo
+	photoStorage  port.Storage
+	placesRepo    port.PlacesRepository
 }
 
-func NewFetchImagesService(photoUploader port.Uploader, placesRepo *postgres.PlacesRepo) *FetchImagesService {
+func NewFetchImagesService(photoStorage port.Storage, placesRepo port.PlacesRepository) *FetchImagesService {
 	return &FetchImagesService{
-		photoUploader: photoUploader,
+		photoStorage: photoStorage,
 		placesRepo:    placesRepo,
 	}
 }
@@ -106,7 +105,7 @@ func (s *FetchImagesService) worker(ctx context.Context, photoChan <-chan domain
 		log.Printf("Worker processing photo for place %s, photo %s", photo.PlaceID, photo.PhotoId)
 		
 		if photo.ImageUrl.Valid {
-			log.Printf("Photo already uploaded to S3: %s", photo.ImageUrl.String)
+			log.Printf("Photo already uploaded to storage: %s", photo.ImageUrl.String)
 			resultChan <- nil
 			continue
 		}
@@ -129,7 +128,7 @@ func (s *FetchImagesService) worker(ctx context.Context, photoChan <-chan domain
 		defer os.Remove(imagePath)
 
 		// Upload image
-		imgURL, err := s.photoUploader.Upload(ctx, imagePath, "images/"+photo.PlaceID+"/"+photo.PhotoId+".jpg")
+		imgURL, err := s.photoStorage.Upload(ctx, imagePath, "images/"+photo.PlaceID+"/"+photo.PhotoId+".jpg")
 		if err != nil {
 			log.Printf("Failed to upload image for %s/%s: %v", photo.PlaceID, photo.PhotoId, err)
 			resultChan <- err

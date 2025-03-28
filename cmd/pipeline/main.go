@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"wheretoeat/internal/core/pipeline/mongo2postgres"
+	"wheretoeat/internal/adapter/pipeline/mongo2postgres"
 	"wheretoeat/internal/adapter/repository/mongodb"
 	"wheretoeat/internal/adapter/repository/postgres"
 	"wheretoeat/internal/adapter/util"
@@ -37,7 +37,7 @@ func main() {
 
 	// Run ETL pipeline
 	etlService := pipeline.NewPlacesETLService(mongoRepo, pgRepo)
-	err = etlService.Run(context.Background())
+	err = etlService.SearchResultsToPostgres(context.Background())
 	if err != nil {
 		log.Fatalf("ETL pipeline failed: %v", err)
 	}

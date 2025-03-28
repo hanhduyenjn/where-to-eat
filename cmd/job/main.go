@@ -15,7 +15,7 @@ import (
 	"wheretoeat/internal/adapter/repository/postgres"
 	"wheretoeat/internal/adapter/storage"
 	"wheretoeat/internal/adapter/util"
-	"wheretoeat/internal/core/fetch"
+	"wheretoeat/internal/adapter/fetch"
 )
 
 func main() {

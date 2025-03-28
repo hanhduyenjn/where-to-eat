@@ -21,13 +21,11 @@ func LoadEnv() {
 	))
 
 	// Set MongoDB URI
-	os.Setenv("MONGO_URI", fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=%s",
+	os.Setenv("MONGO_URI", fmt.Sprintf("mongodb://%s:%s@%s:%s/?authSource=%s",
 		os.Getenv("MONGO_USER"),
 		os.Getenv("MONGO_PASSWORD"),
 		os.Getenv("MONGO_HOST"),
 		os.Getenv("MONGO_PORT"),
-		os.Getenv("MONGO_DB"),
 		os.Getenv("MONGO_AUTH_SOURCE"),
 	))
-
 }

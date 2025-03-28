@@ -234,7 +234,7 @@ func (r *PlacesRepo) AreaHasBeenScanned(ctx context.Context, category string, ci
 	return false, nil
 }
 
-func (r *PlacesRepo) SavePlaces(ctx context.Context, category string, circle domain.Circle, places []interface{}) error {
+func (r *PlacesRepo) SaveSearchResults(ctx context.Context, category string, circle domain.Circle, places []interface{}) error {
 	// not implemented
 	return nil
 }

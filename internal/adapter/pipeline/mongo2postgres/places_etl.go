@@ -22,7 +22,7 @@ func NewPlacesETLService(mongoRepo *mongodb.PlacesRepo, pgRepo *postgres.PlacesR
 	return &PlacesETLService{mongoRepo: mongoRepo, pgRepo: pgRepo}
 }
 
-func (s *PlacesETLService) Run(ctx context.Context) error {
+func (s *PlacesETLService) SearchResultsToPostgres(ctx context.Context) error {
 	// Extract raw data from MongoDB
 	rawResponses, err := s.mongoRepo.GetRawPlaces(ctx)
 	if err != nil {

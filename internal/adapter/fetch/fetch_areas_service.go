@@ -13,10 +13,10 @@ import (
 
 type FetchAreasService struct {
 	areasRepo  port.AreasRepository
-	apiAdapter port.PlacesAPIAdapter
+	apiAdapter port.PlacesAPIPort
 }
 
-func NewFetchAreasService(areasRepo port.AreasRepository, apiAdapter port.PlacesAPIAdapter) *FetchAreasService {
+func NewFetchAreasService(areasRepo port.AreasRepository, apiAdapter port.PlacesAPIPort) *FetchAreasService {
 	return &FetchAreasService{
 		areasRepo:  areasRepo,
 		apiAdapter: apiAdapter,

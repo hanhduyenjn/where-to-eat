@@ -31,14 +31,14 @@ func NewMongoAdapter() (*mongo.Client, error) {
 
 func NewPlacesRepo(client *mongo.Client) *PlacesRepo {
 	mongoDB := os.Getenv("MONGO_DB")
-	mongoPlacesCollection := os.Getenv("MONGO_COLLECTION_PLACES")
+	mongoPlacesCollection := os.Getenv("MONGO_COLLECTION_SEARCH_RESULTS")
 	return &PlacesRepo{
 		client:           client,
 		placesCollection: client.Database(mongoDB).Collection(mongoPlacesCollection),
 	}
 }
 
-func (r *PlacesRepo) SavePlaces(ctx context.Context, category string, circle domain.Circle, places []interface{}) error {
+func (r *PlacesRepo) SaveSearchResults(ctx context.Context, category string, circle domain.Circle, places []interface{}) error {
 	_, err := r.placesCollection.InsertOne(ctx, bson.M{
 		"category": category,
 		"lat":      circle.Lat,
@@ -88,16 +88,6 @@ func (r *PlacesRepo) GetRawPlaces(ctx context.Context) ([]domain.PlacesRawRespon
 	}
 
 	return documents, nil
-}
-
-func (r *PlacesRepo) GetPhotos(ctx context.Context, limit, offset int) ([]domain.Photo, error) {
-	// not implemented
-	return nil, nil
-}
-
-func (r *PlacesRepo) GetNearbyPlaces(ctx context.Context, category string, circle domain.Circle, searchString string) ([]domain.Place, error) {
-	// not implemented
-	return nil, nil
 }
 
 func (r *PlacesRepo) AreaHasBeenScanned(ctx context.Context, category string, circle domain.Circle) (bool, error) {

@@ -12,9 +12,9 @@ import (
 )
 
 type FetchPlacesService struct {
-	placesRepo     port.PlacesRepository
+	placesRepo     port.SearchResultsRepository
 	categoriesRepo port.CategoriesRepository
-	apiAdapter     port.PlacesAPIAdapter
+	apiAdapter     port.PlacesAPIPort
 
 	// Global variables for concurrency control
 	wg        sync.WaitGroup
@@ -22,7 +22,7 @@ type FetchPlacesService struct {
 	semaphore chan struct{}
 }
 
-func NewFetchPlacesService(placesRepo port.PlacesRepository, categoriesRepo port.CategoriesRepository, apiAdapter port.PlacesAPIAdapter) *FetchPlacesService {
+func NewFetchPlacesService(placesRepo port.SearchResultsRepository, categoriesRepo port.CategoriesRepository, apiAdapter port.PlacesAPIPort) *FetchPlacesService {
 	return &FetchPlacesService{
 		placesRepo:     placesRepo,
 		categoriesRepo: categoriesRepo,
@@ -106,7 +106,7 @@ func (s *FetchPlacesService) fetchPlacesForCircle(ctx context.Context, category 
         log.Printf("Fetched %d places for %s at (%.6f, %.6f, %.2fm)", numPlaces, category, circle.Lat, circle.Lng, circle.Radius)
         
         // Save fetched places
-        err = s.placesRepo.SavePlaces(ctx, category, circle, places)
+        err = s.placesRepo.SaveSearchResults(ctx, category, circle, places)
         if err != nil {
             log.Printf("Failed to save places for %s at (%.6f, %.6f, %.2fm): %v", category, circle.Lat, circle.Lng, circle.Radius, err)
             return err

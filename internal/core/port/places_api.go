@@ -5,6 +5,6 @@ import (
 	"wheretoeat/internal/core/domain"
 )
 
-type PlacesAPIAdapter interface {
+type PlacesAPIPort interface {
 	FetchPlaces(ctx context.Context, params domain.RequestParams) ([]interface{}, error)
 }

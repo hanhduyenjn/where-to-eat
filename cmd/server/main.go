@@ -7,7 +7,7 @@ import (
 	"wheretoeat/internal/adapter/handler/get"
 	"wheretoeat/internal/adapter/repository/postgres"
 	"wheretoeat/internal/adapter/util"
-	"wheretoeat/internal/core/service"
+	"wheretoeat/internal/adapter/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"

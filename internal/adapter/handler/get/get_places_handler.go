@@ -5,14 +5,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"wheretoeat/internal/core/service"
+	"wheretoeat/internal/core/port"
 )
 
 type GetPlacesHandler struct {
-	service *service.GetPlacesService
+	service port.GetPlacesServicePort
 }
 
-func NewGetPlacesHandler(service *service.GetPlacesService) *GetPlacesHandler {
+func NewGetPlacesHandler(service port.GetPlacesServicePort) *GetPlacesHandler {
 	return &GetPlacesHandler{service: service}
 }
 
